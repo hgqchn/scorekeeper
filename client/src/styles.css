@@ -1,0 +1,219 @@
+:root {
+  color: #18212f;
+  background: #f4f7f3;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  background: #1d4f3a;
+  color: white;
+  min-height: 44px;
+  padding: 0 16px;
+  font-weight: 700;
+}
+
+button.secondary {
+  background: #dfe8e0;
+  color: #193225;
+}
+
+button.danger {
+  background: #a73535;
+}
+
+button.ghost {
+  background: transparent;
+  color: #a73535;
+  min-height: 36px;
+  padding: 0;
+}
+
+button.link {
+  background: transparent;
+  color: #1d4f3a;
+  padding: 0;
+  min-height: 32px;
+  font-size: 1rem;
+}
+
+button.icon {
+  width: 44px;
+  padding: 0;
+  background: #dfe8e0;
+  color: #193225;
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid #c7d2c6;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  background: white;
+  color: #18212f;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.shell {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.hero {
+  padding: 36px 0 24px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.hero p,
+.muted {
+  color: #657064;
+  margin-top: 8px;
+}
+
+.panel,
+.admin {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #d8e0d6;
+  border-radius: 8px;
+  background: white;
+}
+
+.actions,
+.row,
+.scoreHeader {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.actions {
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.actions button,
+.row input {
+  flex: 1;
+}
+
+.error {
+  color: #a73535;
+  background: #fff0f0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.list,
+.scores {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.playerPick,
+.history {
+  width: 100%;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  background: white;
+  color: #18212f;
+  border: 1px solid #d8e0d6;
+  text-align: left;
+}
+
+.history {
+  min-height: 74px;
+  display: grid;
+  gap: 4px;
+}
+
+.history span,
+.history small {
+  color: #657064;
+}
+
+.scoreHeader {
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #d8e0d6;
+  border-radius: 8px;
+  background: white;
+}
+
+.card > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card h2 {
+  font-size: 1.1rem;
+}
+
+.card strong {
+  font-size: 2.4rem;
+}
+
+.scoreButtons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 560px) {
+  .hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .scoreHeader,
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .scoreButtons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+client/node_modules/
+.pnpm-store/
+client/dist/
+data/*.sqlite
+data/*.sqlite-*
+.env
+*.log
+.DS_Store
+Thumbs.db
