@@ -280,15 +280,17 @@ app.patch('/api/sessions/:roomCode/players/:playerId/score', (req, res) => {
   const session = loadSession(code);
   if (session.status !== 'active') fail(409, '场次已结束');
   const playerId = int(req.params.playerId, 'playerId');
-  const delta = int(req.body.delta, 'delta');
-  if (delta < -9999 || delta > 9999 || delta === 0) fail(400, '分数变化必须在 -9999 到 9999 之间，且不能为 0');
   if (user.role !== 'admin' && user.playerId !== playerId) fail(403, '普通玩家只能修改自己的分数');
 
   transaction(() => {
     const player = db.prepare('SELECT id, score FROM players WHERE id = ? AND session_id = ?').get(playerId, session.id);
     if (!player) fail(404, '玩家不存在');
+    const hasScore = Object.hasOwn(req.body, 'score');
+    const next = hasScore ? int(req.body.score, 'score') : player.score + int(req.body.delta, 'delta');
+    const delta = next - player.score;
+    if (next < -999999 || next > 999999) fail(400, '分数必须在 -999999 到 999999 之间');
+    if (delta === 0) fail(400, '分数没有变化');
     const at = now();
-    const next = player.score + delta;
     db.prepare('UPDATE players SET score = ?, updated_at = ? WHERE id = ?').run(next, at, playerId);
     db.prepare(`
       INSERT INTO score_events

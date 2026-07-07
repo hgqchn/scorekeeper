@@ -61,11 +61,17 @@ try {
     body: JSON.stringify({ delta: 5 })
   });
   assert.equal(state.players.find((p) => p.id === b.id).score, 5);
+  state = await request(`/api/sessions/${code}/players/${b.id}/score`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${admin}` },
+    body: JSON.stringify({ score: 12 })
+  });
+  assert.equal(state.players.find((p) => p.id === b.id).score, 12);
   state = await request(`/api/sessions/${code}/undo`, {
     method: 'POST',
     headers: { authorization: `Bearer ${admin}` }
   });
-  assert.equal(state.players.find((p) => p.id === b.id).score, 0);
+  assert.equal(state.players.find((p) => p.id === b.id).score, 5);
   console.log('smoke ok');
 } finally {
   child.kill();

@@ -68,6 +68,7 @@ function Shell({ children }) {
 
 function HomePage() {
   const [roomCode, setRoomCode] = useState('');
+  const code = roomCode.trim();
   return (
     <Shell>
       <section className="hero">
@@ -75,9 +76,9 @@ function HomePage() {
         <p>朋友聚会、桌游、台球、羽毛球，一房一码就开局。</p>
       </section>
       <div className="panel">
-        <label>房间码</label>
-        <input value={roomCode} onChange={(e) => setRoomCode(e.target.value.toUpperCase())} placeholder="例如 AB12CD" />
-        <button onClick={() => roomCode.trim() && go(`/join/${roomCode.trim().toUpperCase()}`)}>加入场次</button>
+        <label>房间 ID</label>
+        <input inputMode="numeric" value={roomCode} onChange={(e) => setRoomCode(e.target.value)} placeholder="例如 1" />
+        <button onClick={() => code && go(`/join/${code}`)}>加入场次</button>
       </div>
       <div className="actions">
         <button onClick={() => go('/create')}>创建新场次</button>
@@ -89,7 +90,7 @@ function HomePage() {
 
 function CreatePage() {
   const [name, setName] = useState('');
-  const [type, setType] = useState('boardgame');
+  const [type, setType] = useState('');
   const [adminPin, setAdminPin] = useState('');
   const [players, setPlayers] = useState(['', '']);
   const [error, setError] = useState('');
@@ -116,12 +117,7 @@ function CreatePage() {
         <label>场次名称</label>
         <input value={name} onChange={(e) => setName(e.target.value)} maxLength="80" required />
         <label>场景类型</label>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="boardgame">桌游</option>
-          <option value="billiards">台球</option>
-          <option value="badminton">羽毛球</option>
-          <option value="other">其他</option>
-        </select>
+        <input value={type} onChange={(e) => setType(e.target.value)} maxLength="40" placeholder="例如 台球、羽毛球双打、桌游" />
         <label>管理员 PIN</label>
         <input value={adminPin} onChange={(e) => setAdminPin(e.target.value)} minLength="4" maxLength="32" required />
         <label>初始玩家</label>
@@ -204,6 +200,7 @@ function ScorePage({ roomCode }) {
   const playerId = Number(localStorage.getItem(key(roomCode, 'playerId')));
   const [data, setData] = useState(null);
   const [newPlayer, setNewPlayer] = useState('');
+  const [scoreInputs, setScoreInputs] = useState({});
   const [error, setError] = useState('');
 
   const sorted = useMemo(() => [...(data?.players || [])].sort((a, b) => b.score - a.score), [data]);
@@ -228,17 +225,27 @@ function ScorePage({ roomCode }) {
   }
 
   async function score(target, delta) {
+    await setScore(target, { delta });
+  }
+
+  async function setScore(target, body) {
     setError('');
     try {
       const next = await api(`/sessions/${roomCode}/players/${target.id}/score`, {
         method: 'PATCH',
         token,
-        body: JSON.stringify({ delta })
+        body: JSON.stringify(body)
       });
       setData(next);
     } catch (err) {
       setError(err.message);
     }
+  }
+
+  async function submitScore(e, player) {
+    e.preventDefault();
+    await setScore(player, { score: Number(scoreInputs[player.id]) });
+    setScoreInputs({ ...scoreInputs, [player.id]: '' });
   }
 
   async function addPlayer(e) {
@@ -282,9 +289,21 @@ function ScorePage({ roomCode }) {
                 <strong>{player.score}</strong>
               </div>
               {canEdit && data.session.status === 'active' && (
-                <div className="scoreButtons">
-                  {buttons.map((delta) => <button key={delta} onClick={() => score(player, delta)}>{delta > 0 ? `+${delta}` : delta}</button>)}
-                </div>
+                <>
+                  <div className="scoreButtons">
+                    {buttons.map((delta) => <button key={delta} onClick={() => score(player, delta)}>{delta > 0 ? `+${delta}` : delta}</button>)}
+                  </div>
+                  <form className="row" onSubmit={(e) => submitScore(e, player)}>
+                    <input
+                      type="number"
+                      value={scoreInputs[player.id] ?? ''}
+                      onChange={(e) => setScoreInputs({ ...scoreInputs, [player.id]: e.target.value })}
+                      placeholder="指定分数"
+                      required
+                    />
+                    <button>设定</button>
+                  </form>
+                </>
               )}
               {admin && data.session.status === 'active' && <button className="danger ghost" onClick={() => deletePlayer(player.id)}>删除玩家</button>}
             </article>

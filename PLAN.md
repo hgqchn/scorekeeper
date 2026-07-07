@@ -6,7 +6,7 @@
 
 核心目标：
 
-- 通过房间码快速创建、加入、继续计分场次。
+- 通过场次 ID 快速创建、加入、继续计分场次；场次 ID 直接作为房间码。
 - 支持管理员和普通玩家两种身份。
 - 分数变化实时同步到所有打开页面。
 - 所有分数变化写入历史事件，支持撤销最近一次操作。
@@ -90,9 +90,9 @@ scorekeeper/
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | id | INTEGER PRIMARY KEY AUTOINCREMENT | 主键 |
-| room_code | TEXT NOT NULL UNIQUE | 唯一房间码 |
+| room_code | TEXT NOT NULL UNIQUE | 房间码，MVP 中直接使用 sessions.id 的字符串 |
 | name | TEXT NOT NULL | 场次名称 |
-| type | TEXT | 场景类型，例如 billiards、badminton、boardgame、other |
+| type | TEXT | 自定义场景类型，例如台球、羽毛球双打、桌游 |
 | admin_pin_hash | TEXT NOT NULL | bcrypt 后的管理员 PIN |
 | status | TEXT NOT NULL | active 或 finished |
 | created_at | TEXT NOT NULL | ISO 时间 |
@@ -170,14 +170,14 @@ MVP 阶段使用启动时建表即可，不单独引入迁移框架。
 
 管理员：
 
-- 通过房间码和管理员 PIN 登录。
+- 通过场次 ID 和管理员 PIN 登录。
 - PIN 只保存 bcrypt 哈希。
 - 登录成功后前端保存轻量凭据到 `localStorage`。
 - 可以添加玩家、删除玩家、修改任意玩家分数、重置、撤销、结束场次。
 
 普通玩家：
 
-- 通过房间码加入。
+- 通过场次 ID 加入。
 - 选择已有玩家身份，或在允许的入口中由管理员添加玩家。
 - 前端保存 `roomCode` 和 `playerId` 到 `localStorage`。
 - 只能修改自己的分数。
@@ -438,7 +438,7 @@ MVP 选择：删除被撤销的最近事件。
 
 ```json
 {
-  "roomCode": "AB12CD"
+  "roomCode": "1"
 }
 ```
 
@@ -507,7 +507,7 @@ MVP 选择：删除被撤销的最近事件。
 字段：
 
 - 场次名称。
-- 场景类型。
+- 自定义场景类型。
 - 管理员 PIN。
 - 初始玩家列表。
 
